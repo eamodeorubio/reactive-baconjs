@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FRP in practice with BaconJS</title>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/foundation.min.css">
+
+  <style>
+
+    .flexi {
+      width: 100%;
+      padding-left: 5em;
+      padding-right: 8em;
+    }
+
+    .flexi .col {
+      float: left;
+      position: relative;
+    }
+
+    .flexi .col .l, .flexi .col.l {
+      width: 5em;
+      margin-left: -5em;
+    }
+
+    .flexi .col .c, .flexi .col.c {
+      width: 100%;
+      margin-right: 1em;
+    }
+
+    .flexi .col .r, .flexi .col.r {
+      margin-right: -100%;
+      width: 9em;
+    }
+
+    @media all and (max-width: 40em) {
+      body {
+        box-sizing: border-box;
+        width: 95%;
+        margin: 0 auto;
+        padding: 0;
+      }
+
+      .book {
+        width: 100%;
+        overflow: visible;
+        font-size: 1em;
+      }
+    }
+
+    @media all and (min-width: 40.063em) and (max-width: 64em) {
+
+      body {
+        box-sizing: border-box;
+        width: 39em;
+        margin: 0 auto;
+        padding: 0.5em 0 0 0;
+      }
+
+      .book {
+        width: 49%;
+        height: 22em;
+        overflow: auto;
+        font-size: 0.7em;
+      }
+    }
+
+    @media all and (min-width: 64.063em) and (max-width: 90em) {
+
+      body {
+        box-sizing: border-box;
+        width: 63em;
+        margin: 0 auto;
+        padding: 1em 0 0 0;
+      }
+
+      .book {
+        width: 33%;
+        height: 25em;
+        overflow: auto;
+        font-size: 0.85em;
+      }
+    }
+
+    @media all and (min-width: 90.063em) {
+
+      body {
+        box-sizing: border-box;
+        width: 89em;
+        margin: 0 auto;
+        padding: 1em 0 0 0;
+      }
+
+      .book {
+        width: 25%;
+        height: 25em;
+        overflow: auto;
+        font-size: 0.85em;
+      }
+    }
+
+    .book {
+      box-sizing: border-box;
+      display: inline-block;
+      margin: 0 auto;
+      padding: 0.6em;
+    }
+
+    .book ul {
+      font-size: 1em;
+    }
+
+    .book:hover {
+      -webkit-box-shadow: 0px 0px 5px 2px #ccc;
+      -moz-box-shadow: 0px 0px 5px 2px #ccc;
+      box-shadow: 0px 0px 5px 2px #ccc;
+    }
+
+    .book .title {
+      text-align: center;
+      font-size: 1.6em;
+      font-weight: bold;
+    }
+
+    .book .description {
+      margin: 0.5em 0;
+    }
+
+    .book .description img {
+      display: inline-block;
+      margin: 0;
+      float: left;
+      width: 33.3333%;
+      padding: 0 0.5em 0 0;
+    }
+
+    .book .description .authors {
+      display: inline-block;
+      margin: 0;
+      float: right;
+      width: 66.6666%;
+    }
+
+    .book .description .authors ul li {
+      list-style-position: inside;
+      list-style-type: none;
+    }
+
+    .book .description .authors ul li:before {
+      content: "\00bb";
+      color: blue;
+      margin: 0 0.5em 0 0;
+    }
+
+    .book .price {
+      text-align: right;
+      margin: 0.5em 0 0 0;
+    }
+
+    .book .price span {
+      font-weight: bold;
+    }
+
+    input[type=range] {
+      height: 0.75em;
+      border-radius: 0.75em;
+      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+<div class="search">
+  <div class="flexi">
+    <input class="col c" style="margin-left: -5em;" value="reactive"
+           type="search" id="search-text" placeholder="Enter seach text">
+
+    <div class="col r"
+         style="line-height: 1.5em;padding-top: 0.4em;padding-bottom: 0.4em;">
+      <img class="loader" id="waiting-msg"
+           style="float: left;"
+           src="image/ajax-loader-dark.gif">
+      <span style="float: right;">Items found:
+        <span id="total-count">0</span></span>
+    </div>
+    <div style="clear: both"></div>
+  </div>
+  <div class="flexi">
+    <label class="col l"
+           for="min-price-range">Min price: </label>
+    <input class="col c" type="range"
+           style="background-color: palegreen;"
+           id="min-price-range" name="priceRange"
+           min="0" max="100" step="0.05" value="0">
+    <span class="col r"
+          id="min-price-output">0 $</span>
+
+    <div style="clear: both"></div>
+  </div>
+  <div class="flexi">
+    <label class="col l"
+           for="max-price-range">Max price: </label>
+    <input class="col c" type="range"
+           style="background-color: lightpink;"
+           id="max-price-range" name="priceRange"
+           min="0" max="100" step="0.05" value="0">
+    <span class="col r"
+          id="max-price-output">0 $</span>
+
+    <div style="clear: both"></div>
+  </div>
+</div>
+<div class="results">
+  <article class="book example">
+    <h1 class="title"><a target="_blank" href="${link}">${title}</a></h1>
+
+    <div class="description">
+      <img src="https://s3.amazonaws.com/titlepages.leanpub.com/programmerenvoorkinderen/small?1393108198">
+
+      <div class="authors">By:
+        <ul>
+        </ul>
+      </div>
+      <div style="clear: both"></div>
+    </div>
+    <p class="price">Price: <span>${price}</span> $</p>
+  </article>
+</div>
+<script src="js/zepto.min.js"></script>
+<script src="js/bacon.min.js"></script>
+<script>
+
+
+  function eventStreamForQuery(queryString) {
+    if (!queryString)
+      return Bacon.never();
+
+    var dataSource = new EventSource("books?" + queryString);
+    return Bacon.fromBinder(function (output) {
+      function close() {
+        if (dataSource) {
+          dataSource.close();
+          dataSource = null;
+        }
+      }
+
+      dataSource.addEventListener('end', function () {
+        output(new Bacon.End());
+        close();
+      });
+
+      dataSource.addEventListener('data', function (event) {
+        output(new Bacon.Next(JSON.parse(event.data)));
+      });
+
+      return close;
+    });
+  }
+
+  var alreadyProcessedBooks = {};
+
+  var NewQueryEvent = {
+    render: function () {
+      $('#waiting-msg').show();
+      $('#total-count').text('0');
+      $('.results').html('');
+    },
+    hasNotBeenProcessed: function () {
+      return true;
+    },
+    markAsProcessed: function () {
+      Object.keys(alreadyProcessedBooks).forEach(function (key) {
+        delete alreadyProcessedBooks[key];
+      });
+    },
+    itemCount: function () {
+      return -1;
+    }
+  };
+
+  var BookEvent = function () {
+    var bookExample = $('.book.example').removeClass('example');
+    bookExample.remove();
+
+    function htmlForAuthor(author) {
+      return "<li>" + author + "</li>";
+    }
+
+    return function (book) {
+      return {
+        render: function () {
+          var clone = bookExample.clone(false);
+          var titleLink = clone.find('.title a');
+          titleLink.attr('href', book.link);
+          titleLink.text(book.title);
+          clone.find('.description img').attr('src', book.cover);
+          clone.find('.price span').text(book.price);
+          var authorContainer = clone.find('.authors ul');
+          authorContainer.html(book.authors.map(htmlForAuthor).join(''));
+          $('.results').append(clone);
+        },
+        hasNotBeenProcessed: function (alreadyProcessed) {
+          return !alreadyProcessed[book.link];
+        },
+        markAsProcessed: function (alreadyProcessed) {
+          alreadyProcessed[book.link] = true;
+        },
+        itemCount: function () {
+          return 1;
+        }
+      };
+    };
+  }();
+
+  var EndEvent = function () {
+    var progress = $('#waiting-msg');
+
+    return function () {
+      return {
+        render: function () {
+          progress.hide();
+        },
+        hasNotBeenProcessed: function () {
+          return true;
+        },
+        markAsProcessed: function () {
+        },
+        itemCount: function () {
+          return 0;
+        }
+      };
+    };
+  }();
+
+  function updateItemCount(currentTotalItems, itemCount) {
+    return itemCount >= 0 ? currentTotalItems + itemCount : 0;
+  }
+
+  function valueFrom(selector, event) {
+    event = event || "change";
+    var $el = $(selector);
+    var prop = $el
+            .asEventStream(event)
+            .map('.target.value')
+            .skipDuplicates()
+            .toProperty($el.get(0).value);
+    return prop;
+  }
+
+  function renderPriceInto(selector) {
+    var $el = $(selector);
+    return function (price) {
+      $el.text(price + " $");
+    };
+  }
+
+  function toQueryString(query) {
+    var queryComponents = [],
+            searchText = query.q,
+            minPrice = query.minPrice,
+            maxPrice = query.maxPrice;
+    if (searchText.length > 3)
+      queryComponents.push("q=" + searchText);
+    if (minPrice > 0)
+      queryComponents.push("minPrice=" + minPrice);
+    if (maxPrice >= minPrice && maxPrice > 0)
+      queryComponents.push("maxPrice=" + maxPrice);
+    return queryComponents.join('&');
+  }
+
+  $(function () {
+    var query = Bacon.combineTemplate({
+      q: valueFrom('#search-text', 'keyup'),
+      minPrice: valueFrom('#min-price-range')
+              .map(Number)
+              .doAction(renderPriceInto('#min-price-output')),
+      maxPrice: valueFrom('#max-price-range')
+              .map(Number)
+              .doAction(renderPriceInto('#max-price-output'))
+    }).doAction(function (query) {
+              if (query.minPrice > query.maxPrice)
+                $('#max-price-range').val(query.minPrice).trigger('change');
+            });
+
+    // NOTE: resultItems neverEnds because searchTerms never ends
+    var resultItems = query
+            .debounce(250)
+            .map(toQueryString)
+            .flatMapLatest(function (queryString) {
+              return Bacon.once(NewQueryEvent)
+                      .concat(eventStreamForQuery(queryString)
+                              .map(BookEvent)
+                              .mapEnd(EndEvent)
+                      );
+            })
+            .filter(".hasNotBeenProcessed", alreadyProcessedBooks)
+            .doAction(".markAsProcessed", alreadyProcessedBooks)
+            .doAction(".render");
+
+    var foundItemCount = resultItems
+            .map(".itemCount")
+            .scan(0, updateItemCount);
+
+    foundItemCount
+            .map(String)
+            .assign($('#total-count'), "text");
+  });
+</script>
+</body>
+</html>

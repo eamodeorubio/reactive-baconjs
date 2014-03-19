@@ -1,0 +1,21 @@
+{
+  "name": "demo-server",
+  "version": "0.1.0",
+  "description": "Demo server for Reactive Programming in practice with BaconJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Enrique Amodeo",
+  "license": "MIT",
+  "dependencies": {
+    "levelup": "~0.18.2",
+    "cheerio": "~0.13.1",
+    "leveldown": "~0.10.2",
+    "request": "~2.33.0",
+    "multimeter": "~0.1.1",
+    "async": "~0.2.10",
+    "event-stream": "~3.1.0",
+    "express": "~3.4.8"
+  }
+}
