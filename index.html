@@ -308,7 +308,7 @@
 <section>
   <h2>This talk</h2>
   <ol>
-    <li>Intro</li>
+    <li>Why reactive?</li>
     <li>Reactive DOM</li>
     <li>AJAX the Reactive Way</li>
     <li>Nested Streams</li>
@@ -328,7 +328,7 @@
 
 <section class="separata">
   <hgroup>
-    <h2>Intro</h2>
+    <h2>Why reactive?</h2>
   </hgroup>
   <figure>
     <img src="./img/brucelee.jpg">
@@ -364,15 +364,15 @@
   </ul>
 </section>  
   
-<section>
-  <h2>My book</h2>
-  <h4>(Coming soon...)</h4>
+<!--<section>-->
+  <!--<h2>My book</h2>-->
+  <!--<h4>(Coming soon...)</h4>-->
 
-  <a href="https://leanpub.com/enrest"><img src="https://s3.amazonaws.com/titlepages.leanpub.com/enrest/large?1388681040"
-       alt="[Designing Web APIs (the hypermedia way)]" target="_blank"></a>
-  
-  <p><a href="https://leanpub.com/enrest">https://leanpub.com/enrest</a></p>
-</section>
+  <!--<a href="https://leanpub.com/enrest"><img src="https://s3.amazonaws.com/titlepages.leanpub.com/enrest/large?1388681040"-->
+       <!--alt="[Designing Web APIs (the hypermedia way)]" target="_blank"></a>-->
+  <!---->
+  <!--<p><a href="https://leanpub.com/enrest">https://leanpub.com/enrest</a></p>-->
+<!--</section>-->
   
 <section>
   <h2>Let's have a look</h2>
@@ -386,7 +386,7 @@
 
   <ul>
     <li>Very complete</li>
-    <li>Made for JS (TM)</li>
+    <li>Made for JS</li>
     <li>Node &amp; Browser</li>
     <li>Lightweight (5 KB min+zip)</li>
     <li>Bridges with jQuery/Zepto</li>
@@ -521,10 +521,10 @@
     dataSource.addEventListener('message', function (event) {
       console.log(event.data);
     });
-    source.addEventListener('open', function(event) {
+    dataSource.addEventListener('open', function(event) {
       // Connection is open !
     });
-    source.addEventListener('error', function(event) {
+    dataSource.addEventListener('error', function(event) {
       if (e.readyState == EventSource.CLOSED) {
         // Connection is closed!
       }
