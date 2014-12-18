@@ -308,7 +308,7 @@
 <section>
   <h2>This talk</h2>
   <ol>
-    <li>Why reactive?</li>
+    <li>Reactive?</li>
     <li>Reactive DOM</li>
     <li>AJAX the Reactive Way</li>
     <li>Nested Streams</li>
@@ -328,7 +328,7 @@
 
 <section class="separata">
   <hgroup>
-    <h2>Why reactive?</h2>
+    <h2>Reactive?</h2>
   </hgroup>
   <figure>
     <img src="./img/brucelee.jpg">
@@ -339,9 +339,32 @@
     </figcaption>
   </figure>
 </section>
-  
+
 <section>
-  <h2>What really matters</h2>
+    <h2>Reactive Programming?</h2>
+    <h4>(be water my friend)</h4>
+    <ul>
+        <li>Flow of events as first class citizens</li>
+        <li>Event transformation: map, flatMap ...</li>
+        <li>Temporal transformation: delay, throttle, debounce ...</li>
+        <li>Composition: merge, zip, combine ...</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Reactive Observable</h2>
+    <h4>(remember observer pattern?)</h4>
+    <ul>
+        <li>Models a flow of events</li>
+        <li>An EventEmitter on steroids</li>
+        <li>START, DATA, ERROR, END events</li>
+        <li>Transformation methods: map, flatMap, delay, ...</li>
+        <li>Two kinds: Streams &amp; Properties</li>
+    </ul>
+</section>
+
+<section>
+  <h2>Why?</h2>
   <ul>
     <li>Batch performance is not important any more</li>
     <li>Responsiveness is what the user wants</li>
@@ -351,18 +374,6 @@
     <li>Do not wait for "completion"</li>
   </ul>
 </section>
-  
-<section>
-  <h2>Let's build something</h2>
-  <ul>
-    <li><a href="https://leanpub.com" target="_blank">leanpub.com</a> book search</li>
-    <li>Real time search</li>
-    <li>By description</li>
-    <li>By maximum price</li>
-    <li>By minimum price</li>
-    <li>No pagination</li>
-  </ul>
-</section>  
   
 <!--<section>-->
   <!--<h2>My book</h2>-->
@@ -379,7 +390,7 @@
   <a href="http://localhost:8091/search.html" target="_blank"><img src="img/demo.png"></a>
   <p class="small">(I know, my web design skills suck !)</p>
 </section>
-  
+
 <section>
   <h2>Bacon</h2>
   <h4>(it's healthy)</h4>
@@ -390,11 +401,10 @@
     <li>Node &amp; Browser</li>
     <li>Lightweight (5 KB min+zip)</li>
     <li>Bridges with jQuery/Zepto</li>
-    <li>Event Streams &amp; Properties</li>
     <li>Have a look <a href="https://github.com/raimohanska/bacon.js">https://github.com/baconjs/bacon.js</a></li>
   </ul>
 </section>
-  
+
 <section class="separata">
   <hgroup>
     <h2>Reactive DOM</h2>
