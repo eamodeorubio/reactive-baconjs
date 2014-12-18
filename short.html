@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Reactive Programming in practice with BaconJS (short version)</title>
+
+  <meta name="description"
+        content="Slides of my talk about reactive programing using BaconJS">
+  <meta name="author" content="Enrique Amodeo">
+
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"/>
+
+  <link rel="stylesheet" href="reveal.js-2.1/css/reveal.css">
+  <link rel="stylesheet" href="reveal.js-2.1/css/theme/default.css" id="theme">
+
+  <!-- For syntax highlighting -->
+  <link rel="stylesheet" href="reveal.js-2.1/lib/css/zenburn.css">
+
+  <style>
+      /* Aside */
+    .left {
+      float: left;
+    }
+
+    img.left {
+      margin: 0;
+      padding: 0;
+      width: 25%;
+    }
+
+    img.left + ul {
+      margin: 0;
+      width: 60%;
+    }
+
+      /* Figures with captions */
+    .reveal section figure {
+      position: relative;
+      margin: 0 auto;
+      padding: 0;
+      width: 600px;
+      height: 400px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .reveal section figure > img {
+      width: 100%;
+      max-height: none;
+      border-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .reveal section figure > figcaption {
+      position: absolute;
+      bottom: 0.5em;
+      left: 0;
+      width: 100%;
+      border-style: none;
+      border-width: 0;
+      margin: 0;
+      padding: 0;
+      background-color: rgb(37, 33, 28);
+      background-color: rgba(37, 33, 28, 0.5);
+      font-size: 0.4em;
+      text-align: center;
+    }
+
+    .reveal section figure > figcaption {
+      line-height: 1.5em;
+      vertical-align: middle;
+    }
+
+    .reveal section figure > figcaption a {
+      line-height: 1.5em !important;
+    }
+
+      /* Cover */
+    .reveal section.cover footer {
+      line-height: 33px;
+      clear: both;
+    }
+
+    .reveal section.cover > footer {
+      position: absolute;
+      bottom: 0.5em;
+      left: 0;
+      border-style: none;
+      border-width: 0;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      background-color: rgb(37, 33, 28);
+      background-color: rgba(37, 33, 28, 0.5);
+      font-size: 0.4em;
+      text-align: center;
+    }
+
+    .reveal section.cover footer img {
+      float: left;
+      margin: 0 1em 0 0;
+      padding: 0;
+      cursor: pointer;
+      border-style: none;
+    }
+
+    .reveal section.cover footer a,
+    .reveal section.cover footer span {
+      margin: 0;
+      padding: 0;
+      vertical-align: baseline;
+      line-height: 33px;
+    }
+
+      /* Separata */
+    .reveal section.separata hgroup {
+      margin-top: 0.5em;
+    }
+
+    .reveal section.separata hgroup h2,
+    .reveal section.separata hgroup h3,
+    .reveal section.separata hgroup h4 {
+      color: #F0F1EB;
+      text-shadow: #111150 0px 0px 0.2em;
+    }
+
+    .reveal section.separata figure {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .reveal section.separata figure > img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-style: none;
+      border-width: 0;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      z-index: -1;
+    }
+
+      /* Animation */
+    div.animation-container {
+      position: relative;
+      margin: 0 auto;
+      padding: 0;
+      width: 809px;
+      height: 399px;
+      background-color: transparent;
+      -moz-box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 6px 0px;
+      -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 6px 0px;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 6px 0px;
+      overflow: hidden;
+    }
+
+    .animation-container .frame,
+    .animation-container .frame > img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 0;
+      border-style: none;
+      padding: 0;
+      margin: 0;
+      min-width: 100%;
+      max-width: none;
+      max-height: none;
+      box-shadow: none
+    }
+
+    .animation-container .frame > img.loader {
+      position: absolute;
+      top: 140px;
+      left: 180px;
+      border: 0;
+      border-style: none;
+      padding: 0;
+      margin: 0;
+      width: 126px;
+      min-width: 126px;
+      box-shadow: none;
+    }
+
+    .snippet {
+      font-family: monospace !important;
+    }
+
+    .reveal table.matrix {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .reveal table.matrix th.pivot {
+      border-style: none;
+    }
+
+    .reveal table.matrix th, .reveal table.matrix td {
+      border-style: solid;
+      border-width: 1px;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .reveal table.matrix td li {
+      list-style: none;
+    }
+
+    .reveal pre {
+      width:100%;
+    }
+
+    .reveal .bad {
+      color: red;
+      font-style: italic;
+    }
+
+    .reveal .small {
+      font-size: 0.6em;
+    }
+
+    .reveal .highlight {
+      background-color: #606000; /*#222230;*/
+      font-style: italic;
+    }
+    
+    .reveal section figure.marble {
+      width:100%;
+      margin: auto 0;
+    }
+    .reveal section figure.marble img{
+      margin: 0 auto; 
+      vertical-align:middle;
+      display:inline-block;
+      height: 100%;
+      width:auto;
+    }
+  </style>
+  <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+  <script>
+    document.write('<link rel="stylesheet" href="reveal.js-2.1/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+  </script>
+
+  <!--[if lt IE 9]>
+  <script src="reveal.js-2.1/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section class="cover">
+  <h1>Reactive Programming in Practice</h1>
+  <h2>(Using Bacon JS)</h2>
+  <p>
+    <small>By <a
+            href="http://eamodeorubio.wordpress.com/about/">Enrique
+      Amodeo</a> /
+      <a href="http://twitter.com/eamodeorubio">@eamodeorubio</a></small>
+  </p>
+  <footer>
+    <a rel="license"
+       href="http://creativecommons.org/licenses/by-nc-sa/2.0/">
+      <img alt="Creative Commons License"
+           src="http://i.creativecommons.org/l/by-nc-sa/2.0/88x31.png"/>
+    </a>
+    
+    <a rel="license" style="vertical-align: middle"
+       href="http://creativecommons.org/licenses/by-nc-sa/2.0/">
+      This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 2.0 Generic
+      License
+    </a>
+  </footer>
+</section>
+
+<section>
+  <h2>Enrique Amodeo</h2>
+  <h4>(who is this guy?)</h4>
+
+  <img src="img/EnriqueAmodeo.jpg" class="left"
+       alt="[Enrique Amodeo, circa 2010]">
+  <ul>
+    <li>Programming since 1984</li>
+    <li>Currently eBay Senior Software Engineer</li>
+    <li>Has loved JS since 2005</li>
+    <li>Test infected</li>
+    <li>Enthusiast of the Agile/Lean way</li>
+    <li>Follow me at
+      <a href="https://twitter.com/eamodeorubio">@eamodeorubio</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>This talk</h2>
+  <ol>
+    <li>Reactive?</li>
+    <li>Reactive DOM</li>
+    <li>AJAX the Reactive Way</li>
+    <li>Nested Streams</li>
+  </ol>
+</section>
+  
+<section>
+  <h2>Warning!!</h2>
+  <h4>Not Recommended for Sensitive Audiences</h4>
+  <ul>
+    <li>There will be code !</li>
+    <li>Shitty custom marble diagrams !</li>
+  </ul>
+</section>
+
+<section class="separata">
+  <hgroup>
+    <h2>Reactive?</h2>
+  </hgroup>
+  <figure>
+    <img src="./img/brucelee.jpg">
+    <figcaption>
+      <span>Original by Squeezyboy: </span>
+      <a href="http://www.flickr.com/photos/squeezyboy/130035888/"
+         target="_blank">http://www.flickr.com/photos/squeezyboy/130035888/</a>
+    </figcaption>
+  </figure>
+</section>
+
+<section>
+    <h2>Reactive Programming?</h2>
+    <h4>(be water my friend)</h4>
+    <ul>
+        <li>Flow of events as first class citizens</li>
+        <li>Event transformation: map, flatMap ...</li>
+        <li>Temporal transformation: delay, throttle, debounce ...</li>
+        <li>Composition: merge, zip, combine ...</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Reactive Observable</h2>
+    <h4>(remember observer pattern?)</h4>
+    <ul>
+        <li>Models a flow of events</li>
+        <li>An EventEmitter on steroids</li>
+        <li>START, DATA, ERROR, END events</li>
+        <li>Transformation methods: map, flatMap, delay, ...</li>
+        <li>Two kinds: Streams &amp; Properties</li>
+    </ul>
+</section>
+
+<section>
+  <h2>Why?</h2>
+  <ul>
+    <li>Batch performance is not important any more</li>
+    <li>Responsiveness is what the user wants</li>
+    <li>Fast feedback to the user</li>
+    <li>Process user input ASAP</li>
+    <li>Show results ASAP</li>
+    <li>Do not wait for "completion"</li>
+  </ul>
+</section>
+  
+<!--<section>-->
+  <!--<h2>My book</h2>-->
+  <!--<h4>(Coming soon...)</h4>-->
+
+  <!--<a href="https://leanpub.com/enrest"><img src="https://s3.amazonaws.com/titlepages.leanpub.com/enrest/large?1388681040"-->
+       <!--alt="[Designing Web APIs (the hypermedia way)]" target="_blank"></a>-->
+  <!---->
+  <!--<p><a href="https://leanpub.com/enrest">https://leanpub.com/enrest</a></p>-->
+<!--</section>-->
+  
+<section>
+  <h2>Let's have a look</h2>
+  <a href="http://localhost:8091/search.html" target="_blank"><img src="img/demo.png"></a>
+  <p class="small">(I know, my web design skills suck !)</p>
+</section>
+
+<section>
+  <h2>Bacon</h2>
+  <h4>(it's healthy)</h4>
+
+  <ul>
+    <li>Very complete</li>
+    <li>Made for JS</li>
+    <li>Node &amp; Browser</li>
+    <li>Lightweight (5 KB min+zip)</li>
+    <li>Bridges with jQuery/Zepto</li>
+    <li>Have a look <a href="https://github.com/raimohanska/bacon.js">https://github.com/baconjs/bacon.js</a></li>
+  </ul>
+</section>
+
+<section class="separata">
+  <hgroup>
+    <h2>Reactive DOM</h2>
+  </hgroup>
+  <figure>
+    <img src="./img/jet.jpg">
+    <figcaption>
+      <span>Original by Carl Milner: </span>
+      <a href="http://www.flickr.com/photos/62766743@N07/9287407448/"
+         target="_blank">http://www.flickr.com/photos/62766743@N07/9287407448/</a>
+    </figcaption>
+  </figure>
+</section>
+  
+<section>
+  <h2>Getting the Stream</h2>
+  <pre><code contenteditable>   var keyUpStream = $('input.search-text')
+                                .asEventStream('keyup');</code></pre>
+  <figure class="marble"
+          style="height: 500px">
+    <img src="./img/domstream.png">
+  </figure>
+</section>
+  
+<section>
+  <h2>Getting the Stream</h2>
+  <pre><code contenteditable>    var queryTextStream = $('input.search-text')
+                                .asEventStream('keyup')
+                                .map(function extractValue(ev) {
+                                   return ev.target.value;
+                                });</code></pre>
+  <figure class="marble"
+          style="height: 440px">
+    <img src="./img/texts.png">
+  </figure>
+</section>
+  
+<section>
+  <h2>Getting the Stream</h2>
+  <h4>(with style)</h4>
+  <pre><code contenteditable>    
+      var queryTextStream = $('input.search-text')
+                                .asEventStream('keyup')
+                                .map('.target.value');
+  </code></pre>
+</section>
+  
+<section>
+  <h2>Getting the Stream</h2>
+  <h4>(no duplicates)</h4>
+  <pre><code contenteditable>    
+      var queryTextStream = $('input.search-text')
+                                .asEventStream('keyup')
+                                .map('.target.value')
+                                .skipDuplicates();
+  </code></pre>
+</section>  
+  
+<section>
+  <h2>Streams VS. Properties</h2>
+  <figure class="marble singleton"
+          style="height: 550px">
+   <img src="./img/property_vs_stream.png">
+  </figure>
+</section>  
+  
+<section>
+  <h2>Getting a reactive property</h2>
+  <pre><code contenteditable>
+    var $inputSearch = $('input.search-text');
+    var queryTextStream = $inputSearch
+                              .asEventStream('keyup')
+                              .map('.target.value')
+                              .skipDuplicates()
+                              .toProperty($inputSearch.get(0).value);
+  </code></pre>
+</section>
+  
+<section>
+  <h2>Getting a reactive property</h2>
+  <h4>(with style)</h4>
+  <pre><code contenteditable>
+    function valueFrom(selector, event) {
+      event = event || "change";
+      var $el = $(selector);
+      var prop = $el
+              .asEventStream(event)
+              .map('.target.value')
+              .skipDuplicates()
+              .toProperty($el.get(0).value);
+      return prop;
+    }
+
+    var queryTextStream = valueFrom('input.search-text', 'keyup');
+  </code></pre>
+</section>  
+  
+<section class="separata">
+  <hgroup>
+    <h2>AJAX the Reactive Way</h2>
+  </hgroup>
+  <figure>
+    <img src="./img/rocket.png">
+    <figcaption>
+      <span>Original by Randy Merrill: </span>
+      <a href="http://www.flickr.com/photos/zoramite/3994053516/"
+         target="_blank">http://www.flickr.com/photos/zoramite/3994053516/</a>
+    </figcaption>
+  </figure>
+</section>  
+  
+<section>
+  <h2>Thou shall stream!</h2>
+  <figure class="marble">
+    <img src="./img/streaming.png">
+  </figure>
+</section>  
+  
+<section>
+  <h2>Server Sent Events</h2>
+  <h4>(web sockets are so posh)</h4>
+  <pre><code contenteditable>    var dataSource = new EventSource(url);
+    // Listen for any message
+    dataSource.addEventListener('message', function (event) {
+      console.log(event.data);
+    });
+    dataSource.addEventListener('open', function(event) {
+      // Connection is open !
+    });
+    dataSource.addEventListener('error', function(event) {
+      if (e.readyState == EventSource.CLOSED) {
+        // Connection is closed!
+      }
+    });
+    // Listen for messages of custom type "some-msg-type"
+    dataSource.addEventListener('some-msg-type', function (event) {
+      console.log(event.data);
+    });</code></pre>
+</section> 
+  
+<section>
+  <h2>Reactice Server Sent Events</h2>
+  <h4>(using Bacon.fromBinder)</h4>
+  <pre><code contenteditable>  function eventStreamForQuery(queryString) {
+    var dataSource = new EventSource("books?" + queryString);
+  
+    function close() {
+      if (dataSource) {
+        dataSource.close();
+        dataSource = null;
+      }
+    }
+
+    return Bacon.fromBinder(function (output) {
+      // Add code here to emit Bacon events
+      
+      return close; // Return "cleaning" function
+    });
+  }</code></pre>
+</section>
+  
+<section>
+  <h2>Reactice Server Sent Events</h2>
+  <h4>(Bacon.End and Bacon.Next)</h4>
+  <pre><code contenteditable>
+  function eventStreamForQuery(queryString) {
+    // ... Omitted for brevity ...
+    return Bacon.fromBinder(function(output) {
+      
+      dataSource.addEventListener('end', function () {
+        output(new Bacon.End());
+        close();
+      });
+
+      dataSource.addEventListener('data', function (event) {
+        output(new Bacon.Next(JSON.parse(event.data)));
+      });
+
+      return close;
+    });
+  }
+  </code></pre>
+</section>
+  
+<section>
+  <h2>Reactice Server Sent Events</h2>
+  <h4>(Empty stream)</h4>
+  <pre><code contenteditable>
+  function eventStreamForQuery(queryString) {
+    if (!queryString)
+      return Bacon.never(); // Only "end" no data
+
+    var dataSource = new EventSource("books?" + queryString);
+  
+    function close() {
+       // ... Omitted for brevity ...
+    }
+
+    return Bacon.fromBinder(function(output) {      
+      // ... Omitted for brevity ...
+    });
+  }
+  </code></pre>
+</section>
+  
+<section class="separata">
+  <hgroup>
+    <h2>Nested Streams ?</h2>
+  </hgroup>
+  <figure>
+    <img src="./img/matrioskas.jpg">
+    <figcaption>
+      <span>Original by Gláucia Góes: </span>
+      <a href="http://www.flickr.com/photos/glauciagoes/4917832866/"
+         target="_blank">http://www.flickr.com/photos/glauciagoes/4917832866/</a>
+    </figcaption>
+  </figure>
+</section>  
+  
+<section>
+  <h2>A stream resulting from each event?</h2>
+  <h4>(a bit frightening)</h4>
+  <pre><code contenteditable>
+    var streamsOfStreams = queryTextStream
+        .map(queryToQueryString)
+        .map(eventStreamForQuery)
+        .doAction(function(resultStream) {
+            // Mmm, inception or what??
+            return resultStream
+              .map(toSomethingMeaningful)
+              .doAction(doSomethingElse)
+              .doAction(renderResult);
+        });
+  </code></pre>
+</section>  
+  
+<section>
+  <h2>Unwrapping nested streams</h2>
+  <pre><code contenteditable>
+    var streamsOfItems = queryTextStream
+        .map(queryToQueryString)
+        .flatMap(eventStreamForQuery)
+        .map(toSomethingMeaningful)
+        .doAction(doSomethingElse)
+        .doAction(renderResult);
+  </code></pre>
+</section>
+
+<section>
+  <h2>We have a problem!</h2>
+  <figure class="marble"
+          style="height:600px">
+    <img src="./img/flatmap.png">
+  </figure>
+</section>
+  
+<section>
+  <h2>Discarding old streams</h2>
+  <pre><code contenteditable>
+    var streamsOfItems = queryTextStream
+        .map(queryToQueryString)
+        .flatMapLatest(eventStreamForQuery)
+        .map(toSomethingMeaningful)
+        .doAction(doSomethingElse)
+        .doAction(renderResult);
+  </code></pre>
+</section>
+  
+<section>
+  <h2>We have a problem!</h2>
+  <figure class="marble"
+          style="height:600px">
+    <img src="./img/flatmaplatest.png">
+  </figure>
+</section>
+  
+<section>
+  <h2>We need to clean the UI!</h2>
+  <figure class="marble"
+          style="height:550px">
+    <img src="./img/markstream.png">
+  </figure>
+</section> 
+  
+<section>
+  <h2>Inserting begin and end marks</h2>
+  <pre><code contenteditable>
+    function toStreamWithMarks(stream) {
+      return Bacon.once("NEW-QUERY")
+                  .concat(stream
+                            .mapEnd("END-QUERY")
+                  );
+    }
+    var streamsOfItems = queryTextStream
+              .map(queryToQueryString)
+              .map(eventStreamForQuery)
+              .flatMapLatest(toStreamWithMarks)
+              .doAction(doSomethingElse)
+              .doAction(renderResult);
+  </code></pre>
+</section>
+  
+<section>
+  <h2>OO + RX = WIN</h2>
+  <h4>(Our old friend the polymorphism)</h4>
+  <pre><code contenteditable>
+    function toStreamWithMarks(stream) {
+      return Bacon.once(StartQuery)
+                  .concat(stream
+                            .map(ResultItem)
+                            .mapEnd(EndQuery)
+                  );
+    }
+    var streamsOfItems = queryTextStream
+              .map(queryToQueryString)
+              .map(eventStreamForQuery)
+              .flatMapLatest(toStreamWithMarks)
+              .doAction(".render");
+  </code></pre>
+</section>  
+  
+<section>
+  <h2>OO + RX = WIN</h2>
+  <pre><code contenteditable>
+    function StartQuery() {
+      var $inProgressIndicator = $('.waiting-msg'),
+          $itemsFoundCounter = $('.item-count'),
+          $resultContainer = $('.result-container');
+
+      return {
+        render: function () {
+          $inProgressIndicator.show();
+          $itemsFoundCounter.text('0');
+          $resultContainer.html('');
+        }
+      };
+    }
+  </code></pre>
+</section>
+  
+<section>
+  <h2>OO + RX = WIN</h2>
+  <pre><code contenteditable>    function ResultItem(book) {
+      var $template = $('.templates .book'),
+          $resultContainer = $('.result-container');
+      return {
+        render: function () {
+          var $bookView = $template.clone(false);
+          var $titleLink = $bookView.find('.title a');
+          $titleLink.attr('href', book.link);
+          $titleLink.text(book.title);
+          $bookView.find('.description img').attr('src', book.cover);
+          $bookView.find('.price span').text(book.price);
+          $bookView.find('.authors ul')
+                   .html(book.authors.map(htmlForAuthor).join(''));
+          $resultContainer.append($bookView);
+        }
+      };
+    }
+  </code></pre>
+</section>
+  
+<section>
+  <h2>OO + RX = WIN</h2>
+  <pre><code contenteditable>
+    function EndQuery() {
+      var $inProgressIndicator = $('.waiting-msg');
+      return {
+        render: function () {
+          $inProgressIndicator.hide();
+        }
+      };
+    }
+  </code></pre>
+</section>  
+  
+<section class="separata">
+  <hgroup>
+    <h1>The End</h1>
+
+    <h2>Some questions?</h2>
+  </hgroup>
+  <figure>
+    <img src="./img/questions.jpg">
+    <figcaption>
+      <span>Original by Ethan Lofton: </span>
+      <a href="http://www.flickr.com/photos/eleaf/2536358399/"
+         target="_blank">http://bit.ly/1arHGj</a>
+    </figcaption>
+  </figure>
+</section>
+
+</div>
+
+</div>
+
+<script src="reveal.js-2.1/lib/js/head.min.js"></script>
+<script src="reveal.js-2.1/js/reveal.min.js"></script>
+
+<script>
+
+  // Full list of configuration options available here:
+  // https://github.com/hakimel/reveal.js#configuration
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+
+    theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+    transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+    // Optional libraries used to extend on reveal.js
+    dependencies: [
+      { src: 'reveal.js-2.1/lib/js/classList.js', condition: function () {
+        return !document.body.classList;
+      } },
+      { src: 'reveal.js-2.1/plugin/markdown/showdown.js', condition: function () {
+        return !!document.querySelector('[data-markdown]');
+      } },
+      { src: 'reveal.js-2.1/plugin/markdown/markdown.js', condition: function () {
+        return !!document.querySelector('[data-markdown]');
+      } },
+      { 
+        src: 'reveal.js-2.1/plugin/highlight/highlight.js',
+        async: true,
+        callback: function () {
+          /*console.log('XXXXX');
+          hljs.LANGUAGES.gherkin_en = {
+            defaultMode: {
+              contains: [
+                {
+                  className: 'keyword',
+                  begin: '^\\s*(But |And |Then |When |Given |\\* |Scenarios|Examples|Scenario Template|Scenario Outline|Scenario|Background|Feature)',
+                  relevance: 0
+                },
+                {
+                  className: 'string',
+                  begin: '\\|',
+                  relevance: 0
+                },
+                hljs.HASH_COMMENT_MODE,
+                {
+                  className: 'string',
+                  begin: '"""', end: '"""',
+                  relevance: 10
+                },
+                hljs.APOS_STRING_MODE, 
+                hljs.QUOTE_STRING_MODE,
+                hljs.C_NUMBER_MODE,
+                {
+                  className: 'annotation', begin: '@[^@\r\n\t ]+'
+                }
+              ]
+            }
+          };
+*/
+          hljs.initHighlightingOnLoad(); 
+        }
+      },
+      /*{
+        src: 'reveal.js-2.1/plugin/highlight/gherkin_en.js',
+        async: true,
+        
+        callback: function () {
+          console.log('XXXXX');
+          hljs.initHighlightingOnLoad(); 
+        }
+      },*/
+      { src: 'reveal.js-2.1/plugin/zoom-js/zoom.js', async: true, condition: function () {
+        return !!document.body.classList;
+      } },
+      { src: 'reveal.js-2.1/plugin/notes/notes.js', async: true, condition: function () {
+        return !!document.body.classList;
+      } }
+    ]
+  });
+
+</script>
+
+</body>
+</html>
