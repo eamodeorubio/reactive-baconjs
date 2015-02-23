@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Reactive Programming in practice with BaconJS</title>
+  <title>Reactive Programming in practice with BaconJS (short version)</title>
 
   <meta name="description"
         content="Slides of my talk about reactive programing using BaconJS">
@@ -293,10 +293,10 @@
   <h4>(who is this guy?)</h4>
 
   <img src="img/EnriqueAmodeo.jpg" class="left"
-       alt="[Enrique Amodeo, circa 2015]">
+       alt="[Enrique Amodeo, circa 2010]">
   <ul>
     <li>Programming since 1984</li>
-    <li>Currently Software Engineer at SoundCloud</li>
+    <li>Currently eBay Senior Software Engineer</li>
     <li>Has loved JS since 2005</li>
     <li>Test infected</li>
     <li>Enthusiast of the Agile/Lean way</li>
@@ -312,15 +312,7 @@
     <li>Reactive DOM</li>
     <li>AJAX the Reactive Way</li>
     <li>Nested Streams</li>
-    <li>Combining Streams</li>
-    <li>Finishing (touches)</li>
   </ol>
-</section>
-
-<section>
-  <a href="https://www.packtpub.com/application-development/learning-behavior-driven-development-javascript">
-    <img src="https://www.packtpub.com/sites/default/files/3451_Learning%20Behavior-driven%20development%20with%20Javascript.jpg"
-         alt="[Learning Behavior-driven Development with JavaScript]" target="_blank"></a>
 </section>
   
 <section>
@@ -785,221 +777,6 @@
       };
     }
   </code></pre>
-</section>  
-  
-<section class="separata">
-  <hgroup>
-    <h2>Combining streams</h2>
-  </hgroup>
-  <figure>
-    <img src="./img/mixing.jpg">
-    <figcaption>
-      <span>Original by VancityAllie.com: </span>
-      <a href="http://www.flickr.com/photos/30691679@N07/4541010137/"
-         target="_blank">http://www.flickr.com/photos/30691679@N07/4541010137/</a>
-    </figcaption>
-  </figure>
-</section>
-  
-<section>
-  <h2>I want min price &amp; max price</h2>
-  <pre><code contenteditable>
-    // Reactive Property for description criteria
-    var queryByDescription = valueFrom('input.search-text', 'keyup');
-
-    // Reactive Property for minimum price criteria
-    var queryByMinPrice = valueFrom('input.min-price')
-              .map(Number)
-              .doAction(renderPriceInto('.min-price-output'));
-
-    // Reactive Property for maximum price criteria
-    var queryByMaxPrice = valueFrom('input.max-price')
-              .map(Number)
-              .doAction(renderPriceInto('.max-price-output'));
-  </code></pre>
-</section>  
-  
-<section>
-  <h2>I want min price &amp; max price</h2>
-  <pre><code contenteditable>
-    // Whole query criteria
-    var queryStream = shakedNotStirred(
-      queryByDescription,
-      queryByMinPrice,
-      queryByMaxPrice
-    );
-
-    var streamsOfItems = queryStream
-              .map(queryToQueryString)
-              .map(eventStreamForQuery)
-              .flatMapLatest(toStreamWithMarks)
-              .doAction(".render");
-  </code></pre>
-</section>
-  
-<section>
-  <h2>Do I merge?</h2>
-  <pre><code contenteditable>
-    // Note: this does not work with properties
-    var queryStream = queryByDescription
-              .merge(queryByMaxPrice)
-              .merge(queryByMinPrice);
-  </code></pre>
-  <figure>
-    <img src="./img/baconjs-merge.png" style="height:100%;">
-    <figcaption>
-      <span>Original by BaconJS: </span>
-      <a href="https://raw.github.com/wiki/baconjs/bacon.js/baconjs-merge.png"
- target="_blank">https://raw.github.com/wiki/baconjs/bacon.js/baconjs-merge.png</a>
-    </figcaption>
-  </figure>
-</section>   
-
-<section>
-  <h2>Do I zip?</h2>
-  <pre><code contenteditable>    var queryStream = Bacon.zipWith(
-        function(desc, minPrice, maxPrice) {
-          return {
-            q: desc,
-            minPrice: minPrice,
-            maxPrice: maxPrice
-          };
-        },
-        queryByDescription,
-        queryByMinPrice,
-        queryByMaxPrice
-    );</code></pre>
-  <ul>
-    <li>Combines events into single object/event</li>
-    <li>But waits for all streams to emit!</li>
-  </ul>
-</section>
-  
-<section>
-  <h2>Combine</h2>
-  <pre><code contenteditable>    var queryStream = Bacon.combineWith(
-        function(desc, minPrice, maxPrice) {
-          return {
-            q: desc,
-            minPrice: minPrice,
-            maxPrice: maxPrice
-          };
-        },
-        queryByDescription, queryByMinPrice, queryByMaxPrice);</code></pre>
-  <figure style="height: 350px">
-    <img src="./img/baconjs-combine.png" style="height:100%;">
-    <figcaption>
-      <span>Original by BaconJS: </span>
-      <a href="https://raw.github.com/wiki/baconjs/bacon.js/baconjs-combine.png"
- target="_blank">https://raw.github.com/wiki/baconjs/bacon.js/baconjs-combine.png</a>
-    </figcaption>
-  </figure>
-</section>
-  
-<section>
-  <h2>Combine Template!</h2>
-  <h4>Pow!</h4>
-  <pre><code contenteditable>
-    var queryStream = Bacon.combineTemplate({
-      q: queryByDescription,
-      minPrice: queryByMinPrice,
-      maxPrice: queryByMaxPrice
-    });
-  </code></pre>  
-</section>  
-  
-<section class="separata">
-  <hgroup>
-    <h2>Finishing (touches)</h2>
-  </hgroup>
-  <figure>
-    <img src="./img/finishline.jpg">
-    <figcaption>
-      <span>Original by midwestnerd: </span>
-      <a href="http://www.flickr.com/photos/20553990@N06/6278005315/"
-         target="_blank">http://www.flickr.com/photos/20553990@N06/6278005315/</a>
-    </figcaption>
-  </figure>
-</section>
-  
-<section>
-  <h2>Not so fast</h2>
-  <pre><code contenteditable>
-    var streamsOfItems = queryStream
-              .debounce(200)
-              .map(queryToQueryString)
-              .map(eventStreamForQuery)
-              .flatMapLatest(toStreamWithMarks)
-              .doAction(".render");
-  </code></pre>  
-  <ul>
-    <li><code>throttle</code> Minimum time between events</li>
-    <li><code>debounce</code> Fires event if minimum pause</li>
-  </ul>
-</section> 
-  
-<section>
-  <h2>Min Price &lt;= Max Price</h2>
-  <pre><code contenteditable>
-    var queryStream = Bacon.combineTemplate({
-      q: queryByDescription,
-      minPrice: queryByMinPrice,
-      maxPrice: queryByMaxPrice
-    }).doAction(function (query) {
-      if (query.minPrice > query.maxPrice)
-        $('input.max-price').val(query.minPrice).trigger('change');
-    });
-  </code></pre>  
-</section>
-  
-<section>
-  <h2>How many results?</h2>
-  <pre><code contenteditable>    function StartQuery() {
-      return {
-        // ... Omitted code
-        countItems: function () { return -1; }
-      };
-    }
-    function ResultItem(book) {
-      return {
-        // ... Omitted code
-        countItems: function () { return 1; }
-      };
-    }
-    function EndQuery() {
-      return {
-        // ... Omitted code
-        countItems: function () { return 0; }
-      };
-    }
-  </code></pre>  
-</section>
-  
-<section>
-  <h2>How many results?</h2>
-  <pre><code contenteditable> var foundItemCount = streamsOfItems
-          .map(".countItems")
-          .scan(0, function(currentTotalItems, itemCount) {
-            return itemCount >= 0 ? currentTotalItems + itemCount : 0;
-          });
-  </code></pre>  
-  <figure style="height: 300px">
-    <img src="./img/baconjs-scan.png" style="height:100%;">
-    <figcaption>
-      <span>Original by BaconJS: </span>
-      <a href="https://raw.github.com/wiki/baconjs/bacon.js/baconjs-scan.png"
- target="_blank">https://raw.github.com/wiki/baconjs/bacon.js/baconjs-scan.png</a>
-    </figcaption>
-  </figure>
-</section>  
-
-<section>
-  <h2>How many results?</h2>
-  <pre><code contenteditable>    
-    foundItemCount
-            .map(String)
-            .assign($('.total-count'), "text");
-  </code></pre>  
 </section>  
   
 <section class="separata">
